@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>修改城市天气数据</title>
     <style>
+
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
         }
 
         label, input, button {
@@ -24,9 +24,17 @@
             width: auto;
             margin-top: 20px;
         }
+
+        .back_img {
+            background-image: url('{{ url_for('static', filename='imgs/christian-benavides-fox-spirit-line.jpg') }}');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+
     </style>
 </head>
-<body>
+<body class="back_img">
 <h1>修改城市天气数据</h1>
 <form id="edit-form">
 
@@ -61,6 +69,7 @@
 
     <button type="submit">保存修改</button>
 </form>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     document.getElementById('edit-form').addEventListener('submit', function (event) {

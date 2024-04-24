@@ -121,7 +121,7 @@ def deleteWeatherById(id):
     if result.deleted_count == 1:
         return {"msg": "删除成功", "code": 200}
     else:
-        return {"msg": "删除失败！", "code": 201}
+        return {"msg": "删除失败", "code": 201}
 
 
 if __name__ == '__main__':
