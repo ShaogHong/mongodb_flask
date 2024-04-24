@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>城市天气数据管理</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        #search-panel {
+            margin-bottom: 20px;
+        }
+
+        #search-box {
+            padding: 8px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        #data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #data-table th, #data-table td {
+            border: 1px solid #bb1d1d;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #data-table th {
+            background-color: #f2f2f2;
+        }
+
+        .edit-btn, .delete-btn {
+            margin-right: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div id="search-panel">
+    <input type="text" id="search-box" placeholder="搜索城市...">
+    <button id="search-btn">搜索</button>
+    <button id="clear-btn">清空</button>
+</div>
+<table id="data-table">
+    <thead>
+    <tr>
+        <th>气压</th>
+        <th>风向</th>
+        <th>风力</th>
+        <th>湿度</th>
+        <th>更新时间</th>
+        <th>天气现象</th>
+        <th>感觉温度</th>
+        <th>降雨量</th>
+        <th>温度</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody id="data-table-body">
+    <!-- 表格数据将通过JavaScript动态添加 -->
+    </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    //根据id在页面中找到搜索的按钮
+    document.getElementById("search-btn")
+        //再为这个搜索的按钮绑定一个事件
+        //事件的类型是click(点击),点击了就执行后面的function方法
+        .addEventListener("click", function (e) {
+            table_body = document.getElementById("data-table-body")
+            //清空表格
+            table_body.innerHTML = ''
+
+            //获取搜索框的输入文本内容
+            input_text = document.getElementById("search-box").value
+
+            if (input_text.trim() === '') {
+                alert("请输入城市名称")
+                return
+            }
+
+            //准备发起请求获取数据回来
+            //1. 拼接好带城市的url链接
+            url = "http://127.0.0.1:5000/weather/" + input_text.trim()
+            $.get(url, function (json_str) {
+                result = JSON.parse(json_str)
+                //code为200的话,说明请求的城市有数据
+                if (result.code === 200) {
+
+                    //循环每一条天气记录
+                    result.data.forEach(record => {
+                        //生成一个表格的插入行
+                        const row = table_body.insertRow()
+                        row.insertCell(0).textContent = record.airpressure
+                        row.insertCell(1).textContent = record.winddirect
+                        row.insertCell(2).textContent = record.windpower
+                        row.insertCell(3).textContent = record.humidity
+                        row.insertCell(4).textContent = record.updatetime
+                        row.insertCell(5).textContent = record.phenomena
+                        row.insertCell(6).textContent = record.fleelst
+                        row.insertCell(7).textContent = record.rain
+                        row.insertCell(8).textContent = record.temperature
+
+                        actionCell = row.insertCell(9)
+                        //修改按钮
+                        edit_btn = document.createElement("button")
+                        edit_btn.textContent = "修改"
+                        edit_btn.classList.add("edit-btn")
+                        edit_btn.setAttribute("data-id", record._id)
+
+                        //删除按钮
+                        delete_btn = document.createElement("button")
+                        delete_btn.textContent = "删除"
+                        delete_btn.classList.add("delete-btn")
+                        delete_btn.setAttribute("data-id", record._id)
+
+
+                        actionCell.appendChild(edit_btn)
+                        actionCell.appendChild(delete_btn)
+
+                        delete_btn.addEventListener("click", function (event) {
+                            //event是什么？就是按钮本身对象
+                            deleteRow(event)
+                        })
+                        edit_btn.addEventListener("click", function (event) {
+                            editRow(event)
+                        })
+                    })
+                } else {
+                    table_body.innerHTML = '该城市无数据'
+                }
+            })
+
+        })
+
+    function deleteRow(event) {
+        data_id = event.target.getAttribute("data-id")
+        url = "/weather/delete/" + data_id
+        $.get(url, function (result) {
+            //定位到tr标签，执行删除这个标签，达到页面动态删除的视觉效果
+            event.target.parentNode.parentNode.remove()
+            alert(result.msg)
+        })
+    }
+
+    function editRow() {
+        data_id = event.target.getAttribute("data-id")
+        window.open("/edit/" + data_id, "_blank");
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>修改城市天气数据</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        label, input, button {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input, button {
+            padding: 8px;
+            width: 300px;
+        }
+
+        button {
+            cursor: pointer;
+            width: auto;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>修改城市天气数据</h1>
+<form id="edit-form">
+
+    <input type="hidden" name="_id" value="{{data._id}}">
+
+    <label for="airpressure">气压:</label>
+    <input type="text" id="airpressure" name="airpressure" value="{{data.airpressure}}">
+
+    <label for="winddirect">风向:</label>
+    <input type="text" id="winddirect" name="winddirect" value="{{data.winddirect}}">
+
+    <label for="windpower">风力:</label>
+    <input type="text" id="windpower" name="windpower" value="{{data.windpower}}">
+
+    <label for="humidity">湿度:</label>
+    <input type="text" id="humidity" name="humidity" value="{{data.humidity}}">
+
+    <label for="updatetime">更新时间:</label>
+    <input type="text" id="updatetime" name="updatetime" value="{{data.updatetime}}">
+
+    <label for="phenomena">天气现象:</label>
+    <input type="text" id="phenomena" name="phenomena" value="{{data.phenomena}}">
+
+    <label for="fleelst">感觉温度:</label>
+    <input type="text" id="fleelst" name="fleelst" value="{{data.fleelst}}">
+
+    <label for="rain">降雨量:</label>
+    <input type="text" id="rain" name="rain" value="{{data.rain}}">
+
+    <label for="temperature">温度:</label>
+    <input type="text" id="temperature" name="temperature" value="{{data.temperature}}">
+
+    <button type="submit">保存修改</button>
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.getElementById('edit-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        data = Object.fromEntries(formData.entries()); // 仅用于展示如何获取表单数据
+        // 此处添加发送数据到服务器的代码
+        $.post("/weather/save", data, function (result) {
+            if (result.success) {
+                alert("ok")
+            } else {
+                alert("fuck")
+            }
+        })
+    });
+</script>
+</body>
+</html>
